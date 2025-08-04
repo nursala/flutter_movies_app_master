@@ -82,6 +82,9 @@ flutter pub get
 
 # Run the app
 flutter run
+```
+---
+
 🙋‍♂️ About Me
 I'm a passionate Flutter developer on a mission to build elegant, performant, and scalable mobile applications.
 This project is part of my personal portfolio and learning journey — and I'm open to new opportunities!
