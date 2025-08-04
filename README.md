@@ -67,9 +67,4 @@ git clone https://github.com/nursala/flutter_movies_app_master.git
 cd flutter_movies_app_master
 flutter pub get
 flutter run
-📧 Contact
-Nour Salah
 
-📩 nour1sala1@gmail.com
-
-🌐 GitHub
