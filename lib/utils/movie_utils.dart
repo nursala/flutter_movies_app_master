@@ -21,7 +21,7 @@ class MovieUtils {
     return writer.name;
   }
 
-  /// ✅ ترجمة نوع المحتوى حسب اللغة المعطاة
+  /// ✅ Translate content type based on the given language
   static String getMediaTypeLabelByLang(String type, String langCode) {
     final translations = mediaTypeTranslations[langCode] ?? mediaTypeTranslations['en']!;
     return translations[type] ?? type;

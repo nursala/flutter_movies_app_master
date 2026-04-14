@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:untitled23/pages/home/bloc/home_bloc.dart';
 import 'pages/home/home_page.dart';
-import 'services/tmdb_service.dart'; // تأكد من استيراد الخدمة
+import 'services/tmdb_service.dart'; // Make sure to import the service
 
 class MovieApp extends StatelessWidget {
   const MovieApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 1. توفير الخدمة - صحيح
+    // 1. Provide the service - correct
     return RepositoryProvider(
       create: (context) => TmdbService(defaultLanguage: 'ar'),
       child: MaterialApp(

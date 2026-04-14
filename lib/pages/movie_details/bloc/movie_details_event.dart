@@ -10,7 +10,7 @@ abstract class MovieDetailsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-// حدث لتحميل تفاصيل فيلم معين
+// Event to load details for a specific movie
 class LoadMovieDetailsEvent extends MovieDetailsEvent {
   final int movieId;
 
@@ -20,5 +20,5 @@ class LoadMovieDetailsEvent extends MovieDetailsEvent {
   List<Object> get props => [movieId];
 }
 
-// يمكنك إضافة أحداث أخرى هنا لاحقاً
-// مثل AddToFavoritesEvent, RateMovieEvent etc.
+// You can add other events here later
+// such as AddToFavoritesEvent, RateMovieEvent etc.
