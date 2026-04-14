@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 // TMDB API Configuration
-const String tmdbApiKey = 'ab2c96cc48c60d7838015ca2dc9a9180'; // استبدل بمفتاحك الخاص إذا لزم الأمر
+const String tmdbApiKey = 'ab2c96cc48c60d7838015ca2dc9a9180'; // Replace with your own key if needed
 const String tmdbApiBaseUrl = 'https://api.themoviedb.org/3';
 const String tmdbImageBaseUrl = 'https://image.tmdb.org/t/p/w500';
 const String youtubeBaseUrl = 'https://www.youtube.com/watch?v=';

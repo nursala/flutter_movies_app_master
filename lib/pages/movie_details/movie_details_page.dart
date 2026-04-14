@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-// --- استيراد ملفات Bloc الجديدة ---
+// --- Import new Bloc files ---
 import 'bloc/movie_details_bloc.dart';
 import 'bloc/movie_details_state.dart';
 // ---------------------------------
@@ -77,7 +77,7 @@ class _MovieDetailView extends StatelessWidget {
   }
 
   Future<void> _launchTrailer(BuildContext context, List<Video> videos) async {
-    debugPrint("Attempting to find trailer. Video list count: ${videos.length}"); // <-- طباعة عدد الفيديوهات
+    debugPrint("Attempting to find trailer. Video list count: ${videos.length}"); // <-- Print video list count
 
     final trailer = videos.firstWhere(
           (v) {
@@ -86,31 +86,31 @@ class _MovieDetailView extends StatelessWidget {
         return v.type == 'Trailer' && v.site == 'YouTube';
       },
       orElse: () {
-        debugPrint("⚠️ No YouTube Trailer found in the list."); // <-- طباعة إذا لم يتم العثور عليه
+        debugPrint("⚠️ No YouTube Trailer found in the list."); // <-- Print if not found
         return Video(id: '', key: '', name: '', site: '', type: '');
       },
     );
 
     final url = trailer.youtubeUrl;
-    debugPrint("Trailer found: key='${trailer.key}', site='${trailer.site}', name='${trailer.name}'"); // <-- طباعة تفاصيل التريلر
-    debugPrint("Constructed URL: $url"); // <-- طباعة الرابط
+    debugPrint("Trailer found: key='${trailer.key}', site='${trailer.site}', name='${trailer.name}'"); // <-- Print trailer details
+    debugPrint("Constructed URL: $url"); // <-- Print the URL
 
     if (url != null) {
       try {
-        debugPrint("Attempting to launch URL..."); // <-- طباعة قبل المحاولة
+        debugPrint("Attempting to launch URL..."); // <-- Print before attempt
         if (!context.mounted) return;
         await launchUrlString(url, mode: LaunchMode.externalApplication);
-        debugPrint("URL launch successful (or initiated)."); // <-- طباعة بعد المحاولة (قد لا تصل إذا حدث خطأ فوري)
+        debugPrint("URL launch successful (or initiated)."); // <-- Print after attempt (may not be reached if an immediate error occurs)
       } catch (e) {
-        debugPrint("🔴 Error launching URL: $e"); // <-- طباعة الخطأ هنا مهمة جداً
+        debugPrint("🔴 Error launching URL: $e"); // <-- Printing the error here is very important
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$kFailedToOpenLinkLabel $url. Error: $e')), // <-- عرض الخطأ للمستخدم
+            SnackBar(content: Text('$kFailedToOpenLinkLabel $url. Error: $e')), // <-- Show the error to the user
           );
         }
       }
     } else {
-      debugPrint("URL is null, cannot launch."); // <-- طباعة إذا كان الرابط null
+      debugPrint("URL is null, cannot launch."); // <-- Print if the URL is null
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text(kNoTrailerAvailableLabel)),

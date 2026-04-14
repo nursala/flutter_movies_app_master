@@ -2,15 +2,15 @@
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart'; // لـ debugPrint
+import 'package:flutter/foundation.dart'; // for debugPrint
 import 'package:meta/meta.dart';
 
-import '../../../services/tmdb_service.dart'; // تأكد من صحة المسار
-import '../../../models/movie.dart';       // تأكد من صحة المسار
-import '../../../config/constants.dart';    // تأكد من صحة المسار
-import 'home_state.dart';            // استيراد ملف الحالة
+import '../../../services/tmdb_service.dart'; // Make sure the path is correct
+import '../../../models/movie.dart';       // Make sure the path is correct
+import '../../../config/constants.dart';    // Make sure the path is correct
+import 'home_state.dart';            // Import the state file
 
-part 'home_event.dart'; // ربط ملف الأحداث
+part 'home_event.dart'; // Link the events file
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final TmdbService _tmdbService;
@@ -27,7 +27,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<HomeSearchQueryChangedEvent>(_onSearchChanged);
   }
 
-  // --- معالجات الأحداث ---
+  // --- Event handlers ---
 
   Future<void> _onLoadInitialData(
       HomeLoadInitialDataEvent event, Emitter<HomeState> emit) async {
@@ -70,14 +70,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         selectedSort: 'popular', currentPage: 1, genres: [], movies: [],
         searchQuery: '', isSearching: false, status: HomeStatus.initial,
         clearErrorMessage: true));
-    add(HomeLoadInitialDataEvent()); // إضافة حدث لبدء التحميل من جديد
+    add(HomeLoadInitialDataEvent()); // Add event to start loading again
   }
 
   Future<void> _onSortChanged(
       HomeSortChangedEvent event, Emitter<HomeState> emit) async {
     if (event.newSort == state.selectedSort || state.selectedGenreId != null) return;
     emit(state.copyWith(selectedSort: event.newSort, currentPage: 1));
-    await _fetchAndEmitFirstPage(emit); // استخدام دالة مساعدة
+    await _fetchAndEmitFirstPage(emit); // Use helper function
   }
 
   Future<void> _onGenreChanged(
@@ -86,7 +86,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(state.copyWith(
         selectedGenreId: event.newGenreId, clearGenreId: event.newGenreId == null,
         currentPage: 1));
-    await _fetchAndEmitFirstPage(emit); // استخدام دالة مساعدة
+    await _fetchAndEmitFirstPage(emit); // Use helper function
   }
 
   Future<void> _onSearchChanged(
@@ -96,10 +96,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(state.copyWith(
         searchQuery: trimmedQuery, isSearching: trimmedQuery.isNotEmpty,
         currentPage: 1));
-    await _fetchAndEmitFirstPage(emit); // استخدام دالة مساعدة
+    await _fetchAndEmitFirstPage(emit); // Use helper function
   }
 
-  // --- دوال مساعدة داخلية ---
+  // --- Internal helper functions ---
 
   Future<List<Movie>> _fetchMediaPage(int page) async {
     final lang = _serviceLanguage;
@@ -114,7 +114,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _fetchAndEmitFirstPage(Emitter<HomeState> emit) async {
-    // أصبحنا نمرر emit لهذه الدالة
+    // We now pass emit to this function
     if (!state.isSearching || state.movies.isEmpty) {
       emit(state.copyWith(status: HomeStatus.loading, movies: [],
           hasReachedMax: false, clearErrorMessage: true));
@@ -136,6 +136,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       return e.message;
     }
     debugPrint("Unknown error in HomeBloc: $e");
-    return kErrorLoadingData; // استخدام الثابت من ملف constants
+    return kErrorLoadingData; // Use the constant from the constants file
   }
 }

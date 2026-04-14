@@ -1,7 +1,7 @@
 // lib/pages/home/bloc/home_event.dart
 
 
-part of 'home_bloc.dart'; // يربط بملف البلوك
+part of 'home_bloc.dart'; // Links to the bloc file
 
 
 

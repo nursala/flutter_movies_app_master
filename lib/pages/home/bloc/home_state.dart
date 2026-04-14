@@ -1,11 +1,11 @@
 // lib/pages/home/bloc/home_state.dart
 
 import 'package:equatable/equatable.dart';
-import '../../../models/movie.dart'; // تأكد من صحة المسار
-import '../../../models/genre.dart'; // تأكد من صحة المسار
-import '../../../config/constants.dart'; // تأكد من صحة المسار
+import '../../../models/movie.dart'; // Make sure the path is correct
+import '../../../models/genre.dart'; // Make sure the path is correct
+import '../../../config/constants.dart'; // Make sure the path is correct
 
-// حالات التحميل الرئيسية للصفحة
+// Main loading states for the page
 enum HomeStatus { initial, loading, success, failure }
 
 class HomeState extends Equatable {
@@ -18,16 +18,16 @@ class HomeState extends Equatable {
   final String searchQuery;
   final bool isSearching;
   final int currentPage;
-  final bool isLoadingMore; // حالة التحميل عند التمرير لأسفل
-  final bool hasReachedMax; // هل تم تحميل كل الصفحات المتاحة؟
+  final bool isLoadingMore; // Loading state when scrolling down
+  final bool hasReachedMax; // Has all available pages been loaded?
   final String? errorMessage;
 
   const HomeState({
     this.status = HomeStatus.initial,
     this.movies = const <Movie>[],
     this.genres = const <Genre>[],
-    this.selectedType = 'movie', // القيمة الافتراضية
-    this.selectedSort = 'popular', // القيمة الافتراضية
+    this.selectedType = 'movie', // Default value
+    this.selectedSort = 'popular', // Default value
     this.selectedGenreId,
     this.searchQuery = '',
     this.isSearching = false,

@@ -2,14 +2,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-// افترض أن هذه الملفات موجودة في المسارات الصحيحة
+// Assume these files exist at the correct paths
 import '../config/constants.dart';
 import '../models/movie.dart';
 import '../models/genre.dart';
 import '../models/credit.dart';
 import '../models/video.dart';
 
-// استثناء مخصص لأخطاء واجهة برمجة تطبيقات TMDb
+// Custom exception for TMDb API errors
 class TmdbApiException implements Exception {
   final String message;
   TmdbApiException(this.message);
@@ -18,12 +18,12 @@ class TmdbApiException implements Exception {
   String toString() => message;
 }
 
-// خدمة للتفاعل مع واجهة برمجة تطبيقات TMDb
+// Service for interacting with the TMDb API
 class TmdbService {
   late final Dio _dio;
-  final String defaultLanguage; // اللغة الافتراضية إذا لم يتم تمرير لغة أخرى
+  final String defaultLanguage; // Default language if no other language is passed
 
-  // Constructor: يقبل لغة افتراضية (الافتراضي هنا هو 'ar')
+  // Constructor: accepts a default language (default here is 'ar')
   TmdbService({this.defaultLanguage = 'en'}) {
     _dio = Dio(BaseOptions(
       baseUrl: tmdbApiBaseUrl,
@@ -35,7 +35,7 @@ class TmdbService {
     ));
   }
 
-  // جلب قائمة الميديا (أفلام أو مسلسلات)
+  // Fetch media list (movies or TV shows)
   Future<List<Movie>> fetchMedia({
     required String type,
     required String sortBy,
@@ -48,7 +48,7 @@ class TmdbService {
     try {
       String endpoint;
       final Map<String, dynamic> queryParams = {
-        'language': effectiveLanguage, // <-- استخدام اللغة الصحيحة
+        'language': effectiveLanguage, // <-- Use the correct language
         'page': page,
       };
 
@@ -61,9 +61,9 @@ class TmdbService {
         endpoint = endpoints[sortBy] ?? (type == 'movie' ? 'movie/popular' : 'tv/popular');
       }
 
-      // --- جملة تحقق إضافية ---
+      // --- Additional debug statement ---
       debugPrint("  [Check] fetchMedia: Making API call to '/$endpoint' with language='${queryParams['language']}'");
-      // --- نهاية جملة التحقق ---
+      // --- End of debug statement ---
       final response = await _dio.get('/$endpoint', queryParameters: queryParams);
 
       if (response.statusCode == 200 && response.data != null) {
@@ -72,12 +72,12 @@ class TmdbService {
 
         for (var itemJson in results) {
           Movie mediaItem = Movie.fromJson(itemJson, type);
-          // الجزء الخاص بالوصف الاحتياطي معطل حاليًا
+          // The fallback description section is currently disabled
           /*
           if ((mediaItem.overview.trim().isEmpty || mediaItem.overview == kNoDescriptionLabel) &&
               effectiveLanguage != 'en') {
             try {
-              // ملاحظة: الاستدعاء التالي لـ fetchFullDetails سيحتوي على جملة تحقق خاصة به
+              // Note: The following call to fetchFullDetails will have its own debug statement
               final details = await fetchFullDetails(type: type, id: mediaItem.id, language: 'en');
               final overviewEn = details['overview']?.toString() ?? '';
               if (overviewEn.isNotEmpty) {
@@ -103,30 +103,30 @@ class TmdbService {
     }
   }
 
-  // البحث في الميديا
-// --- دالة البحث في الميديا ---
+  // Search in media
+// --- Search media function ---
   Future<List<Movie>> searchMedia({
     required String type,    // 'movie' or 'tv'
-    required String query,   // نص البحث
-    int page = 1,          // رقم الصفحة
-    String? language,      // اللغة المطلوبة (سيتم استخدام اللغة الافتراضية للخدمة إذا كانت null)
+    required String query,   // Search text
+    int page = 1,          // Page number
+    String? language,      // Required language (the service's default language will be used if null)
   }) async {
-    // التحقق من أن نص البحث غير فارغ بعد إزالة المسافات
+    // Check that the search text is not empty after trimming whitespace
     if (query.trim().isEmpty) {
       debugPrint("⚠️ TmdbService.searchMedia: Search query is empty, returning empty list.");
       return [];
     }
 
-    // تحديد اللغة الفعالة
+    // Determine the effective language
     final String effectiveLanguage = language ?? defaultLanguage;
 
-    // [طباعة أساسية]
+    // [Basic print]
 
     try {
       const String endpointBase = 'search';
       final String endpoint = '$endpointBase/$type';
 
-      // معاملات الاستعلام
+      // Query parameters
       final Map<String, dynamic> queryParams = {
         'language': effectiveLanguage,
         'page': page,
@@ -134,16 +134,16 @@ class TmdbService {
         'include_adult': 'false',
       };
 
-      // [طباعة تحقق]
+      // [Debug print]
       debugPrint("  [Check] searchMedia: Making API call to '/$endpoint' with language='${queryParams['language']}', query='${queryParams['query']}', page=${queryParams['page']}");
 
-      // تنفيذ طلب GET
+      // Execute GET request
       final response = await _dio.get('/$endpoint', queryParameters: queryParams);
 
-      // [طباعة استجابة]
+      // [Response print]
       debugPrint("  [Response] searchMedia: Status Code: ${response.statusCode}");
 
-      // التحقق من نجاح الطلب والبيانات
+      // Check request success and data
       if (response.statusCode == 200 && response.data != null) {
         final results = response.data['results'] ?? []; // results is List<dynamic>
         debugPrint("  [Response Data] searchMedia: Received ${results.length} results.");
@@ -175,11 +175,11 @@ class TmdbService {
         return movies;
 
       } else {
-        // رمي استثناء مخصص في حالة فشل الطلب
+        // Throw custom exception if request fails
         throw TmdbApiException('Failed to search media: Status ${response.statusCode}');
       }
     } on DioException catch (e) {
-      // التعامل مع أخطاء Dio
+      // Handle Dio errors
       debugPrint("DioError searching media ('$query'): ${e.message}");
       if (e.response != null) {
         debugPrint("  -> DioError Status Code: ${e.response?.statusCode}");
@@ -187,15 +187,15 @@ class TmdbService {
       }
       throw TmdbApiException(kErrorLoadingData ?? 'Network error occurred.');
     } catch (e) {
-      // التعامل مع أي أخطاء أخرى (including errors from Movie.fromJson or the List.from conversion)
+      // Handle any other errors (including errors from Movie.fromJson or the List.from conversion)
       debugPrint("Error searching media ('$query'): $e");
       debugPrintStack(stackTrace: StackTrace.current, label: 'StackTrace for searchMedia error');
       throw TmdbApiException(kErrorLoadingData ?? 'Error processing search data.');
     }
   }
-  // --- نهاية دالة البحث ---
+  // --- End of search function ---
 
-  // جلب الأنواع (Genres)
+  // Fetch genres
   Future<List<Genre>> fetchGenres({
     required String type,
     String? language,
@@ -206,9 +206,9 @@ class TmdbService {
       final queryParams = {'language': effectiveLanguage};
       final endpoint = '/genre/$type/list';
 
-      // --- جملة تحقق إضافية ---
+      // --- Additional debug statement ---
       debugPrint("  [Check] fetchGenres: Making API call to '$endpoint' with language='${queryParams['language']}'");
-      // --- نهاية جملة التحقق ---
+      // --- End of debug statement ---
       final response = await _dio.get(endpoint, queryParameters: queryParams);
 
       if (response.statusCode == 200 && response.data != null) {
@@ -226,7 +226,7 @@ class TmdbService {
     }
   }
 
-  // جلب التفاصيل الكاملة لعنصر معين
+  // Fetch full details for a specific item
   Future<Map<String, dynamic>> fetchFullDetails({
     required String type,
     required int id,
@@ -238,9 +238,9 @@ class TmdbService {
       final queryParams = {'language': effectiveLanguage};
       final endpoint = '/$type/$id';
 
-      // --- جملة تحقق إضافية ---
+      // --- Additional debug statement ---
       debugPrint("  [Check] fetchFullDetails: Making API call to '$endpoint' with language='${queryParams['language']}'");
-      // --- نهاية جملة التحقق ---
+      // --- End of debug statement ---
       final response = await _dio.get(endpoint, queryParameters: queryParams);
 
       if (response.statusCode == 200 && response.data != null) {
@@ -257,19 +257,19 @@ class TmdbService {
     }
   }
 
-  // جلب فريق العمل (Credits) - لا يتطلب لغة في الطلب
+  // Fetch credits - does not require a language parameter
   Future<Credits> fetchCredits({
     required String type,
     required int id,
-    String? language, // غير مستخدم بواسطة API
+    String? language, // Not used by the API
   }) async {
     final String effectiveLanguage = language ?? defaultLanguage;
 
     try {
       final endpoint = '/$type/$id/credits';
-      // --- لا توجد جملة تحقق للغة هنا لأنها لا تُرسل ---
+      // --- No language debug statement here since it's not sent ---
       debugPrint("  [Check] fetchCredits: Making API call to '$endpoint' (language parameter not applicable)");
-      final response = await _dio.get(endpoint); // لا نمرر language
+      final response = await _dio.get(endpoint); // We don't pass language
 
       if (response.statusCode == 200 && response.data != null) {
         return Credits.fromJson(response.data);
@@ -285,19 +285,19 @@ class TmdbService {
     }
   }
 
-  // جلب الفيديوهات (مثل الإعلانات)
+  // Fetch videos (e.g., trailers)
   Future<List<Video>> fetchVideos({required String type, required int id}) async {
     List<dynamic>? resultsLang1, resultsEn;
     final lang1 = defaultLanguage;
 
     try {
-      // 1. محاولة اللغة الأولى
+      // 1. Try the primary language
       try {
         final queryParams1 = {'language': lang1};
         final endpoint = '/$type/$id/videos';
-        // --- جملة تحقق إضافية ---
+        // --- Additional debug statement ---
         debugPrint("  [Check] fetchVideos: Making API call (Attempt 1) to '$endpoint' with language='${queryParams1['language']}'");
-        // --- نهاية جملة التحقق ---
+        // --- End of debug statement ---
         final response1 = await _dio.get(endpoint, queryParameters: queryParams1);
         if (response1.statusCode == 200 && response1.data != null) {
           resultsLang1 = response1.data['results'];
@@ -306,14 +306,14 @@ class TmdbService {
         debugPrint("⚠️ Failed to fetch '$lang1' videos (proceeding to English fallback): $e");
       }
 
-      // 2. محاولة اللغة الإنجليزية كاحتياطي
+      // 2. Try English as fallback
       if ((resultsLang1 == null || resultsLang1.isEmpty) && lang1 != 'en') {
         try {
           final queryParamsEn = {'language': 'en'};
           final endpoint = '/$type/$id/videos';
-          // --- جملة تحقق إضافية ---
+          // --- Additional debug statement ---
           debugPrint("  [Check] fetchVideos: Making API call (Attempt 2 - Fallback) to '$endpoint' with language='${queryParamsEn['language']}'");
-          // --- نهاية جملة التحقق ---
+          // --- End of debug statement ---
           final responseEn = await _dio.get(endpoint, queryParameters: queryParamsEn);
           if (responseEn.statusCode == 200 && responseEn.data != null) {
             resultsEn = responseEn.data['results'];

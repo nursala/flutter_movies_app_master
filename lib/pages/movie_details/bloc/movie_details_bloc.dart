@@ -16,7 +16,7 @@ part 'movie_details_event.dart';
 
 class MovieDetailsBloc extends Bloc<MovieDetailsEvent, MovieDetailsState> {
   final TmdbService _tmdbService;
-  final String _mediaType = 'movie'; // افترض أن التفاصيل للأفلام
+  final String _mediaType = 'movie'; // Assume details are for movies
 
   MovieDetailsBloc(this._tmdbService) : super(const MovieDetailsState()) {
     on<LoadMovieDetailsEvent>(_onLoadMovieDetails);
@@ -27,43 +27,43 @@ class MovieDetailsBloc extends Bloc<MovieDetailsEvent, MovieDetailsState> {
 
     emit(state.copyWith(status: MovieDetailsStatus.loading, clearError: true));
     try {
-      // --- تعديل لجلب اللغتين والدمج ---
+      // --- Modification to fetch both languages and merge ---
 
-      // 1. جلب البيانات باللغتين + الاعتمادات + الفيديوهات بالتوازي
+      // 1. Fetch data in both languages + credits + videos in parallel
       final results = await Future.wait([
-        // جلب التفاصيل باللغة الافتراضية للخدمة
+        // Fetch details in the service's default language
         _tmdbService.fetchFullDetails(
             type: _mediaType, id: event.movieId, language: _tmdbService.defaultLanguage),
-        // جلب التفاصيل باللغة الإنجليزية كاحتياطي (إذا كانت اللغة الافتراضية ليست الإنجليزية)
+        // Fetch details in English as fallback (if the default language is not English)
         if (_tmdbService.defaultLanguage != 'en')
           _tmdbService.fetchFullDetails(
               type: _mediaType, id: event.movieId, language: 'en')
-        else // إذا كانت اللغة الافتراضية هي الإنجليزية، لا داعي لجلبها مرة أخرى
-          Future.value(null), // نضع قيمة null مؤقتة لت保持 بنية القائمة
-        // جلب الاعتمادات (Credits)
+        else // If the default language is English, no need to fetch it again
+          Future.value(null), // We put a temporary null value to maintain the list structure
+        // Fetch credits
         _tmdbService.fetchCredits(type: _mediaType, id: event.movieId),
-        // جلب الفيديوهات (Videos)
+        // Fetch videos
         _tmdbService.fetchVideos(type: _mediaType, id: event.movieId),
       ]);
 
-      // 2. استخلاص النتائج
+      // 2. Extract results
       final detailsMapLang = results[0] as Map<String, dynamic>;
-      // الخريطة الإنجليزية قد تكون null إذا كانت اللغة الافتراضية هي en
+      // The English map may be null if the default language is 'en'
       final Map<String, dynamic>? detailsMapEn = results[1] as Map<String, dynamic>?;
       final credits = results[2] as Credits;
       final videos = results[3] as List<Video>;
 
-      // 3. دمج الخريطتين (إذا لزم الأمر)
-      final Map<String, dynamic> mergedDetailsMap = Map.from(detailsMapLang); // ابدأ باللغة المطلوبة
+      // 3. Merge the two maps (if needed)
+      final Map<String, dynamic> mergedDetailsMap = Map.from(detailsMapLang); // Start with the requested language
 
       if (detailsMapEn != null) {
-        // قائمة الحقول النصية المحتملة التي نريد لها احتياطي إنجليزي
-        const fieldsToCheck = ['overview', 'title', 'tagline']; // أضف أي حقول أخرى
+        // List of potential text fields we want an English fallback for
+        const fieldsToCheck = ['overview', 'title', 'tagline']; // Add any other fields
 
         for (var field in fieldsToCheck) {
-          // تحقق إذا كان الحقل فارغاً أو null في اللغة المطلوبة
+          // Check if the field is empty or null in the requested language
           if (mergedDetailsMap[field] == null || (mergedDetailsMap[field] is String && (mergedDetailsMap[field] as String).trim().isEmpty)) {
-            // إذا كان فارغاً، استخدم القيمة من الخريطة الإنجليزية إذا كانت موجودة وغير فارغة
+            // If empty, use the value from the English map if it exists and is not empty
             if (detailsMapEn[field] != null && (detailsMapEn[field] is String && (detailsMapEn[field] as String).trim().isNotEmpty)) {
               mergedDetailsMap[field] = detailsMapEn[field];
               debugPrint("🔄 Using English fallback for field '$field' for ID ${event.movieId}");
@@ -72,17 +72,17 @@ class MovieDetailsBloc extends Bloc<MovieDetailsEvent, MovieDetailsState> {
         }
       }
 
-      // 4. تحويل الخريطة المدمجة إلى كائن MovieDetails
+      // 4. Convert the merged map to a MovieDetails object
       final movieDetails = MovieDetails.fromJson(mergedDetailsMap, _mediaType);
 
-      // 5. إصدار الحالة النهائية
+      // 5. Emit the final state
       emit(state.copyWith(
         status: MovieDetailsStatus.success,
-        movieDetails: movieDetails, // <-- استخدم الكائن المدمج
+        movieDetails: movieDetails, // <-- Use the merged object
         credits: credits,
         videos: videos,
       ));
-      // --- نهاية التعديل ---
+      // --- End of modification ---
 
     } catch (e) {
       emit(state.copyWith(
@@ -97,6 +97,6 @@ class MovieDetailsBloc extends Bloc<MovieDetailsEvent, MovieDetailsState> {
       return e.message;
     }
     debugPrint("Unknown error in MovieDetailsBloc: $e");
-    return kErrorLoadingData; // استخدم الثابت
+    return kErrorLoadingData; // Use the constant
   }
 }

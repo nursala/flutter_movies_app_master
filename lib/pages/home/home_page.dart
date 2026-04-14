@@ -20,8 +20,8 @@ class MovieHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>( // <-- تغيير النوع إلى HomeBloc
-      create: (context) => HomeBloc(context.read<TmdbService>()) // <-- إنشاء HomeBloc وتمرير الخدمة
+    return BlocProvider<HomeBloc>( // <-- Change type to HomeBloc
+      create: (context) => HomeBloc(context.read<TmdbService>()) // <-- Create HomeBloc and pass the service
         ..add(HomeLoadInitialDataEvent()),
       child: const _MovieHomeView(),
     );
@@ -46,7 +46,7 @@ class _MovieHomeViewState extends State<_MovieHomeView> {
     super.initState();
     _scrollController.addListener(_onScroll);
     _searchController.addListener(_onSearchChanged);
-    final initialQuery = context.read<HomeBloc>().state.searchQuery; // <-- تغيير النوع إلى HomeBloc
+    final initialQuery = context.read<HomeBloc>().state.searchQuery; // <-- Change type to HomeBloc
     _searchController.text = initialQuery;
   }
 
@@ -62,7 +62,7 @@ class _MovieHomeViewState extends State<_MovieHomeView> {
 
   void _onScroll() {
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 300) {
-      context.read<HomeBloc>().add(HomeLoadMoreMoviesEvent()); // <-- تغيير استدعاء الدالة إلى إضافة حدث
+      context.read<HomeBloc>().add(HomeLoadMoreMoviesEvent()); // <-- Change function call to adding an event
       // -----------------------------
     }
   }
@@ -71,10 +71,10 @@ class _MovieHomeViewState extends State<_MovieHomeView> {
     if (_searchDebounce?.isActive ?? false) _searchDebounce!.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 500), () {
       final query = _searchController.text;
-      debugPrint("🔍 HomePage: Search changed, sending query to Bloc: '$query'"); // <-- تم تغيير Cubit إلى Bloc في النص
+      debugPrint("🔍 HomePage: Search changed, sending query to Bloc: '$query'"); // <-- Changed Cubit to Bloc in the text
       if (mounted) {
-        // --- إرسال حدث تغيير البحث ---
-        context.read<HomeBloc>().add(HomeSearchQueryChangedEvent(query)); // <-- تغيير استدعاء الدالة إلى إضافة حدث
+        // --- Send search change event ---
+        context.read<HomeBloc>().add(HomeSearchQueryChangedEvent(query)); // <-- Change function call to adding an event
         // ---------------------------
       }
     });
@@ -132,7 +132,7 @@ class _MovieHomeViewState extends State<_MovieHomeView> {
           _searchController.text.isNotEmpty?IconButton(
             icon: const Icon(Icons.clear),
             onPressed: _clearSearch,
-            tooltip: 'مسح البحث',
+            tooltip: 'Clear search',
           ): IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {},
@@ -142,7 +142,7 @@ class _MovieHomeViewState extends State<_MovieHomeView> {
       ),
       body: Column(
         children: [
-          BlocBuilder<HomeBloc, HomeState>( // <-- تغيير النوع إلى HomeBloc
+          BlocBuilder<HomeBloc, HomeState>( // <-- Change type to HomeBloc
               buildWhen: (previous, current) =>
               previous.selectedType != current.selectedType ||
                   previous.selectedSort != current.selectedSort ||
@@ -165,9 +165,9 @@ class _MovieHomeViewState extends State<_MovieHomeView> {
               }
           ),
           Expanded(
-            child: BlocConsumer<HomeBloc, HomeState>( // <-- تغيير النوع إلى HomeBloc
+            child: BlocConsumer<HomeBloc, HomeState>( // <-- Change type to HomeBloc
               listener: (context, state) {
-                // لا تغيير في منطق الـ listener
+                // No changes in listener logic
                 if (state.errorMessage != null && !state.isLoadingMore && state.status != HomeStatus.failure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -178,7 +178,7 @@ class _MovieHomeViewState extends State<_MovieHomeView> {
                 }
               },
               builder: (context, state) {
-                // --- لا تغييرات كبيرة في منطق الـ builder نفسه لأنه يعتمد على الحالة (State) ---
+                // --- No major changes in the builder logic itself as it depends on State ---
                 if (state.status == HomeStatus.loading && state.movies.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
                 }

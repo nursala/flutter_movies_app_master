@@ -5,7 +5,7 @@ import '../../../models/movie_details.dart'; // <-- Use MovieDetails model
 import '../../../models/credit.dart';       // <-- Add Credits model
 import '../../../models/video.dart';        // <-- Add Video model
 
-// حالة تحميل تفاصيل الفيلم
+// Movie details loading state
 enum MovieDetailsStatus { initial, loading, success, failure }
 
 class MovieDetailsState extends Equatable {
