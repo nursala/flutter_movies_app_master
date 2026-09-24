@@ -1,93 +1,35 @@
-<h1 align="center">🎬 Flutter Movie App</h1>
+# Flutter Movie Browser
 
-<p align="center">
-  A sleek, high-performance movie browser built using <strong>Flutter</strong> and <strong>BLoC</strong> architecture.<br>
-  Powered by live data from <a href="https://www.themoviedb.org/">TMDb API</a>, this app showcases professional-grade UI, state management, and API integration.
-</p>
+A Flutter app for discovering movies and TV shows, searching titles, filtering by genre, and viewing details from TMDb. The home and detail screens use BLoC for loading, success, and error states.
 
-<p align="center">
-  <img src="https://media.giphy.com/media/l3vR85PnGsBwu1PFK/giphy.gif" width="250" alt="App Preview"/>
-</p>
+## What is in the repository
 
----
+- Movie and TV discovery, search, pagination, and genre filters
+- Detail pages with cast and video information
+- TMDb requests through Dio, cached poster images, and loading placeholders
+- English and Arabic interface labels
 
-## 📱 Features
+## Run locally
 
-- 🔥 Explore trending, top-rated, and upcoming movies
-- 🎥 Rich movie details including posters, synopsis, release date, and ratings
-- 💡 Clean architecture using BLoC for maintainability and testability
-- 📡 Real-time data fetched using Dio from TMDb API
-- ✨ Beautiful, modern UI with animations and skeleton loaders
-- 🚀 Built for scalability, performance, and clean code
-
----
-
-## 🎯 Purpose & Highlights
-
-> This project is more than a tutorial — it's a **real-world showcase** of my Flutter development skills.  
-> It demonstrates my ability to:
->
-> - Integrate live APIs (TMDb)
-> - Apply BLoC architecture effectively
-> - Build responsive, scalable, and well-structured UIs
-> - Write modular and reusable Dart code
-
----
-
-## 🧰 Tech Stack
-
-| Technology     | Purpose                        |
-|----------------|-------------------------------|
-| Flutter        | Cross-platform UI toolkit     |
-| Dart           | Programming language          |
-| flutter_bloc   | State management              |
-| dio / http     | API handling                  |
-| TMDb API       | Movie database & metadata     |
-
----
-
-## 📁 Project Structure
-
-lib/
-├── blocs/ # BLoC: events, states, logic
-├── models/ # Movie data models
-├── screens/ # Main UI pages
-├── widgets/ # Reusable components
-├── services/ # API integration layer
-└── main.dart # Entry point of the app
-
-yaml
-Copy
-Edit
-
----
-
-## 📸 Screenshots
-
-> _(You can add screenshots or video previews of your app in action here!)_
-
----
-
-## 🚀 Getting Started
+Install a Flutter SDK compatible with Dart `^3.7.2`, then run:
 
 ```bash
-# Clone the repository
-git clone https://github.com/nursala/flutter_movies_app_master.git
-
-# Navigate into the project directory
-cd flutter_movies_app_master
-
-# Install dependencies
 flutter pub get
-
-# Run the app
-flutter run
+flutter run --dart-define=TMDB_API_KEY=YOUR_TMDB_KEY
 ```
----
 
-🙋‍♂️ About Me
-I'm a passionate Flutter developer on a mission to build elegant, performant, and scalable mobile applications.
-This project is part of my personal portfolio and learning journey — and I'm open to new opportunities!
+Get an API key from [TMDb](https://www.themoviedb.org/settings/api). The app reads `TMDB_API_KEY` at build time. Do not commit a real key. A mobile app distributes its configured key to clients, so restrict or proxy the credential if you need stronger protection.
 
-💌 Let's connect on LinkedIn or GitHub!
+## Code map
 
+| Path | Responsibility |
+| --- | --- |
+| `lib/pages/home/` | Discovery UI and HomeBloc |
+| `lib/pages/movie_details/` | Detail UI and detail BLoC |
+| `lib/services/tmdb_service.dart` | TMDb HTTP requests |
+| `lib/models/` | API response models |
+| `lib/widgets/` | Shared UI elements |
+
+## Demo
+
+A verified app screenshot or recording has not been added yet. The source and instructions above are the current way to inspect the app.
