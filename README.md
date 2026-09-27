@@ -1,4 +1,5 @@
 # Flutter Movie Browser
+**Flutter · Dart · BLoC · Dio · TMDb API**
 
 A Flutter app for discovering movies and TV shows, searching titles, filtering by genre, and viewing details from TMDb. The home and detail screens use BLoC for loading, success, and error states.
 
@@ -30,6 +31,10 @@ Get an API key from [TMDb](https://www.themoviedb.org/settings/api). The app rea
 | `lib/models/` | API response models |
 | `lib/widgets/` | Shared UI elements |
 
-## Demo
+## Engineering focus
 
-A verified app screenshot or recording has not been added yet. The source and instructions above are the current way to inspect the app.
+Asynchronous API requests, typed response models, reusable widgets, and explicit loading/error/success states through BLoC.
+
+## Project scope
+
+Movie metadata comes from TMDb and requires network access and a valid API key. This is a discovery client; it does not host or stream films.
